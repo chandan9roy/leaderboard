@@ -1,0 +1,17 @@
+language: python
+python:
+  - '2.7'
+env:
+  global:
+    - DB=postgres
+    - NOSE_NOLOGCAPTURE=1
+  matrix:
+    - DJANGO=1.6.5
+install:
+  - pip install -r requirements.txt
+before_script:
+  - flake8 . --max-line-length=120 --max-complexity=10 --exclude='env,migrations,*.egg'
+  - psql -c 'CREATE DATABASE srllb;' -U postgres
+script:
+  - coverage run --source='leaderboards' --branch --omit='leaderboards/migrations/*' manage.py test leaderboards
+  - coverage report --fail-under=92 --show-missing
